@@ -11,7 +11,6 @@ RUN apt-get update -q -y \
     libmcrypt-dev \
     unzip \
     git \
-    nginx \
     procps \
     sudo \
     # Imagick extension
