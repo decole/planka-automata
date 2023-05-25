@@ -14,6 +14,12 @@ Please review, edit and commit them: these files are yours.
 
 baldinof/roadrunner-bundle  instructions:
 
+----
+
+`bin/rr serve`
+
+----
+
 * Download RoadRunner locally: vendor/bin/rr get --location bin/
 * Run your application: bin/rr serve -c .rr.dev.yaml --debug
 * For production, use: bin/rr serve
