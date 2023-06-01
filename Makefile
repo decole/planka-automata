@@ -19,7 +19,7 @@ migration:
 	docker-compose run app php bin/console d:m:m --no-interaction
 
 new-migration:
-	docker-compose run app php bin/console make:migration
+	docker-compose run app php bin/console doctrine:migrations:diff
 
 ps:
 	docker-compose ps

@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Module\AutoNumerator\Service\AutoNumerateCardService;
+use App\Feature\PlankaAuthenticator\Service\PlankaAuthenticateEventService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'cli:auto-numerate', description: 'Auto numerate cli command Planka cards with special label')]
-class AutoNumeratorCommand extends Command
+#[AsCommand(name: 'cli:planka', description: 'cli command as entrypoint interaction with Planka')]
+final class AutoNumeratorCommand extends Command
 {
-    public function __construct(private readonly AutoNumerateCardService $service)
+    public function __construct(private readonly PlankaAuthenticateEventService $service)
     {
         parent::__construct();
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->service->handle();
+        $this->service->execute();
 
         return self::SUCCESS;
     }

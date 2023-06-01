@@ -2,24 +2,32 @@
 parameters:
 
 services:
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+  App\:
+    resource: '../src/'
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
 
-    App\Module\ApiIntegration\Service\PlankaApiIntegrator:
-        arguments:
-            $user: '%env(PLANKA_USER)%'
-            $password: '%env(PLANKA_PASSWORD)%'
-            $uri: '%env(PLANKA_URI)%'
-            $port: '%env(PLANKA_PORT)%'
+  App\Feature\ApiIntegration\Service\PlankaApiIntegrator:
+    arguments:
+      $user: '%env(PLANKA_USER)%'
+      $password: '%env(PLANKA_PASSWORD)%'
+      $uri: '%env(PLANKA_URI)%'
+      $port: '%env(PLANKA_PORT)%'
 
-    App\Module\AutoNumerator\Service\AutoNumerateCardService:
-        arguments:
-            $boardId: '%env(PLANKA_BOARD_ID)%'
+  App\Feature\AutoNumerator\Service\AutoNumerateCardService:
+    arguments:
+      $boardId: '%env(PLANKA_BOARD_ID)%'
+      $cardPrefix: '%env(PLANKA_NUMERICAL_TEMPLATE)%'
+      $numerateLabelId: '%env(PLANKA_NUMERICAL_LABEL_ID)%'
+      $bugfixLabelId: '%env(PLANKA_BUGFIX_LABEL_ID)%'
+      $logger: '@monolog.logger.cards_action'
+
+  App\Feature\AutoNumerator\Service\NextNumberCardService:
+    arguments:
+      $boardId: '%env(PLANKA_BOARD_ID)%'

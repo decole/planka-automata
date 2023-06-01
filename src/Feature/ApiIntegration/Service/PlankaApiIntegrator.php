@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Module\ApiIntegration\Service;
+declare(strict_types=1);
+
+namespace App\Feature\ApiIntegration\Service;
 
 use Planka\Bridge\Config;
 use Planka\Bridge\Exceptions\AuthenticateException;
 use Planka\Bridge\PlankaClient;
-use Planka\Bridge\TransportClients\Client;
-use Symfony\Component\HttpClient\NativeHttpClient;
 
 final class PlankaApiIntegrator
 {
