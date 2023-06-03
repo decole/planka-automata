@@ -1,9 +1,15 @@
 # Planka automation
 
 - [x] For Planka cards with a certain label "Project Card", number automatically with a prefix `[<prefix>-<number>]`.
-- [ ] Transferring cards from column Archive to another board with the Archive/Trash column.
+- [x] Transferring cards from column Archive to another board with the Archive/Trash column.
 - [ ] WebHook for Sentry, create a card in the project with the label "Bugfix".
 - [ ] Notify in telegram about a suitable deadline by card.
+
+## Todo fix docs
+
+> find id, create services commands for list project, board and board list
+
+> and add info by enable features
 
 ----
 

@@ -40,4 +40,9 @@ class BoardCardDetails
     {
         $this->boardId = $boardId;
     }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
 }

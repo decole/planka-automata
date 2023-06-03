@@ -21,12 +21,17 @@ final class AutoNumerateCardService
         private readonly string $bugfixLabelId,
         private readonly string $cardPrefix,
         private readonly string $boardId,
+        private readonly bool $isEnable,
         private readonly LoggerInterface $logger
     ) {
     }
 
     public function handle(PlankaApiIntegrator $integrator): void
     {
+        if (!$this->isEnable) {
+            return;
+        }
+
         $client = $integrator->getClient();
 
         $context = $this->createContext($client->board->get($this->boardId));

@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Feature\AutoNumerator\EventListener;
+declare(strict_types=1);
 
-use App\Feature\AutoNumerator\Service\AutoNumerateCardService;
+namespace App\Feature\DragFinishCardToArchiveBoard\EventListener;
+
+use App\Feature\DragFinishCardToArchiveBoard\Service\DragFinishCardToArchiveBoardService;
 use App\Feature\PlankaAuthenticator\Event\PlankaAuthenticatedEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(priority: 100)]
+#[AsEventListener]
 final class PlankaAuthenticatedEventListener
 {
-    public function __construct(private readonly AutoNumerateCardService $service)
+    public function __construct(private readonly DragFinishCardToArchiveBoardService $service)
     {
     }
 

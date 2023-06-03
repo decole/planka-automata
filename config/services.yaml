@@ -26,8 +26,19 @@ services:
       $cardPrefix: '%env(PLANKA_NUMERICAL_TEMPLATE)%'
       $numerateLabelId: '%env(PLANKA_NUMERICAL_LABEL_ID)%'
       $bugfixLabelId: '%env(PLANKA_BUGFIX_LABEL_ID)%'
+      $isEnable: '%env(bool:IS_ENABLE_FEATURE_AUTO_NUMERATOR)%'
       $logger: '@monolog.logger.cards_action'
 
   App\Feature\AutoNumerator\Service\NextNumberCardService:
     arguments:
       $boardId: '%env(PLANKA_BOARD_ID)%'
+
+  App\Feature\DragFinishCardToArchiveBoard\Service\DragFinishCardToArchiveBoardService:
+    arguments:
+      $boardId: '%env(PLANKA_BOARD_ID)%'
+      $archiveBoardId: '%env(PLANKA_ARCHIVE_BOARD_ID)%'
+      $archiveBoardListId: '%env(PLANKA_ARCHIVE_LIST_ID)%'
+      $targetBoardListId: '%env(PLANKA_ARCHIVE_TARGET_LIST_ID)%'
+      $daysBeforeTransfer: '%env(int:PLANKA_ARCHIVE_DAYS_BEFORE_TRANSFER)%'
+      $isEnable: '%env(bool:IS_ENABLE_FEATURE_DRAG_FINISH_CARD_TO_ARCHIVE_BOARD)%'
+      $logger: '@monolog.logger.cards_action'
