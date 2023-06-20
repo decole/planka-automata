@@ -55,7 +55,7 @@ final class DragFinishCardToArchiveBoardService
         $card->boardId = $this->archiveBoardId;
         $card->listId = $this->archiveBoardListId;
 
-        $client->card->update($card);
+        $client->card->moveCard($card);
 
         sleep(1);
     }
