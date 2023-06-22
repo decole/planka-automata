@@ -29,10 +29,6 @@ services:
       $isEnable: '%env(bool:IS_ENABLE_FEATURE_AUTO_NUMERATOR)%'
       $logger: '@monolog.logger.cards_action'
 
-  App\Feature\AutoNumerator\Service\NextNumberCardService:
-    arguments:
-      $boardId: '%env(PLANKA_BOARD_ID)%'
-
   App\Feature\DragFinishCardToArchiveBoard\Service\DragFinishCardToArchiveBoardService:
     arguments:
       $boardId: '%env(PLANKA_BOARD_ID)%'
@@ -42,3 +38,16 @@ services:
       $daysBeforeTransfer: '%env(int:PLANKA_ARCHIVE_DAYS_BEFORE_TRANSFER)%'
       $isEnable: '%env(bool:IS_ENABLE_FEATURE_DRAG_FINISH_CARD_TO_ARCHIVE_BOARD)%'
       $logger: '@monolog.logger.cards_action'
+
+  App\Feature\SentryWebhook\Service\SentryIssueSaveService:
+    arguments:
+      $isEnable: '%env(bool:IS_ENABLE_FEATURE_SENTRY_ISSUE_CARD)%'
+      $boardId: '%env(PLANKA_BOARD_ID)%'
+      $boardListId: '%env(PLANKA_ACTIVE_TARGET_LIST_ID)%'
+
+  App\Feature\SentryWebhook\Service\CreateBugfixCardService:
+    arguments:
+      $isEnable: '%env(bool:IS_ENABLE_FEATURE_SENTRY_ISSUE_CARD)%'
+      $cardPrefix: '%env(PLANKA_NUMERICAL_TEMPLATE)%'
+      $numerateLabelId: '%env(PLANKA_NUMERICAL_LABEL_ID)%'
+      $bugfixLabelId: '%env(PLANKA_BUGFIX_LABEL_ID)%'

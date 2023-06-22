@@ -36,7 +36,7 @@ final class AutoNumerateCardService
 
         $context = $this->createContext($client->board->get($this->boardId));
 
-        $nextNumber = $this->maxNumberService->getNextNumber($context);
+        $nextNumber = $this->maxNumberService->getNextNumber($context, (int)$this->boardId);
 
         $this->numerate($context, $nextNumber, $client);
 
@@ -44,10 +44,10 @@ final class AutoNumerateCardService
 
         $this->loggingDoublePrefixCards($context->getDoubleNumberedCards());
 
-        $this->maxNumberService->saveByNextNumber($nextNumber);
+        $this->maxNumberService->saveByNextNumber($nextNumber, (int)$this->boardId);
     }
 
-    private function createContext(BoardDto $board): PrefixNumberContext
+    public function createContext(BoardDto $board): PrefixNumberContext
     {
         $context = new PrefixNumberContext($this->cardPrefix);
 

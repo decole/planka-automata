@@ -14,13 +14,12 @@ final class NextNumberCardService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly BoardCardDetailsRepository $repository,
-        private readonly int $boardId
     ) {
     }
 
-    public function getNextNumber(PrefixNumberContext $context): int
+    public function getNextNumber(PrefixNumberContext $context, int $boardId): int
     {
-        $cardDetail = $this->repository->findLastNumberByBoardId($this->boardId);
+        $cardDetail = $this->repository->findLastNumberByBoardId($boardId);
 
         $last = $cardDetail?->getLastCardNumber() ?? 0;
 
@@ -32,40 +31,40 @@ final class NextNumberCardService
             }
         }
 
-        $this->saveLastNumber($cardDetail, $last);
-
-        return ++$last;
-    }
-
-    private function saveLastNumber(?BoardCardDetails $cardDetail, int $last): void
-    {
         if ($cardDetail === null) {
-            $cardDetail = $this->createEntity();
+            $cardDetail = $this->createEntity($boardId);
         }
 
         $cardDetail->setLastCardNumber($last);
 
+        $this->save($cardDetail);
+
+        return ++$last;
+    }
+
+    public function saveByNextNumber(int $nextNumber, int $boardId): void
+    {
+        $cardDetail = $this->repository->findLastNumberByBoardId($boardId);
+
+        if ($cardDetail === null) {
+            $cardDetail = $this->createEntity($boardId);
+        }
+
+        $cardDetail->setLastCardNumber($nextNumber - 1);
+
+        $this->save($cardDetail);
+    }
+
+    public function save(BoardCardDetails $cardDetail): void
+    {
         $this->entityManager->persist($cardDetail);
         $this->entityManager->flush();
     }
 
-    public function saveByNextNumber(int $nextNumber): void
-    {
-        $cardDetail = $this->repository->findLastNumberByBoardId($this->boardId);
-
-        if ($cardDetail === null) {
-            $cardDetail = $this->createEntity();
-        }
-
-        $last = $nextNumber - 1;
-
-        $this->saveLastNumber($cardDetail, $last);
-    }
-
-    public function createEntity(): BoardCardDetails
+    private function createEntity(int $boardId): BoardCardDetails
     {
         $cardDetail = new BoardCardDetails();
-        $cardDetail->setBoardId($this->boardId);
+        $cardDetail->setBoardId($boardId);
 
         return $cardDetail;
     }

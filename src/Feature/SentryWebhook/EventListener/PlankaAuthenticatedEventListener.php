@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Feature\DragFinishCardToArchiveBoard\EventListener;
+namespace App\Feature\SentryWebhook\EventListener;
 
-use App\Feature\DragFinishCardToArchiveBoard\Service\DragFinishCardToArchiveBoardService;
 use App\Feature\PlankaAuthenticator\Event\PlankaAuthenticatedEvent;
+use App\Feature\SentryWebhook\Service\CreateBugfixCardService;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener(priority: 80)]
+#[AsEventListener]
 final class PlankaAuthenticatedEventListener
 {
-    public function __construct(private readonly DragFinishCardToArchiveBoardService $service)
+    public function __construct(private readonly CreateBugfixCardService $service)
     {
     }
 
