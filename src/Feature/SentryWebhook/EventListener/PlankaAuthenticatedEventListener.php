@@ -8,7 +8,7 @@ use App\Feature\PlankaAuthenticator\Event\PlankaAuthenticatedEvent;
 use App\Feature\SentryWebhook\Service\CreateBugfixCardService;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-#[AsEventListener]
+#[AsEventListener(priority: 120)]
 final class PlankaAuthenticatedEventListener
 {
     public function __construct(private readonly CreateBugfixCardService $service)

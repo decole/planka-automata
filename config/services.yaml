@@ -48,7 +48,6 @@ services:
   App\Feature\SentryWebhook\Service\CreateBugfixCardService:
     arguments:
       $isEnable: '%env(bool:IS_ENABLE_FEATURE_SENTRY_ISSUE_CARD)%'
-      $cardPrefix: '%env(PLANKA_NUMERICAL_TEMPLATE)%'
       $numerateLabelId: '%env(PLANKA_NUMERICAL_LABEL_ID)%'
       $bugfixLabelId: '%env(PLANKA_BUGFIX_LABEL_ID)%'
       $logger: '@monolog.logger.cards_action'
