@@ -12,6 +12,7 @@
         "doctrine/doctrine-bundle": "*",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.15",
+        "longman/telegram-bot": "^0.81.0",
         "symfony/console": "6.2.*",
         "symfony/dotenv": "6.2.*",
         "symfony/event-dispatcher": "6.2.*",

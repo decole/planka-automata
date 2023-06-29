@@ -51,3 +51,15 @@ services:
       $numerateLabelId: '%env(PLANKA_NUMERICAL_LABEL_ID)%'
       $bugfixLabelId: '%env(PLANKA_BUGFIX_LABEL_ID)%'
       $logger: '@monolog.logger.cards_action'
+
+  App\Feature\DeadLineNotify\Service\DeadLineNotifyService:
+    $isEnable: '%env(bool:IS_ENABLE_FEATURE_NOTIFY_DEADLINE_CARD_CARD)%'
+    $timezone: '%env(APP_TIMEZONE)%'
+    $message: '%env(DUE_TELEGRAM_MESSAGE)%'
+    $host: '%env(PLANKA_URI)%'
+    $logger: '@monolog.logger.cards_action'
+
+  App\Feature\TelegramNotify\Service\TelegramNotifyService:
+    arguments:
+      $apiKey: '%env(TELEGRAM_BOT_TOKEN)%'
+      $botName: '%env(TELEGRAM_BOT_NAME)%'

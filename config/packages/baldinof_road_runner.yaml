@@ -9,6 +9,8 @@ baldinof_road_runner:
             - Symfony\Component\HttpKernel\Exception\HttpExceptionInterface
             - Symfony\Component\Serializer\Exception\ExceptionInterface
             - Symfony\Contracts\HttpClient\Exception\ExceptionInterface
+        max_jobs: 1000
+        max_jobs_dispersion: 0.2
 
     # Allow to send prometheus metrics to the main RoadRunner process,
     # via a `Spiral\RoadRunner\MetricsInterface` service.

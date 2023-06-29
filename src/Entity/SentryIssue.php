@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\SentryIssueRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 
@@ -17,19 +18,19 @@ class SentryIssue
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: Types::BIGINT)]
     private ?int $boardId;
 
-    #[ORM\Column(type: 'bigint')]
+    #[ORM\Column(type: Types::BIGINT)]
     private ?int $listId;
 
     #[ORM\Column(nullable: true)]
     private ?int $cardNumber = null;
 
-    #[ORM\Column(type: 'bigint', nullable: true)]
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
     private ?int $cardId = null;
 
-    #[ORM\Column(type: 'json')]
+    #[ORM\Column(type: Types::JSON)]
     private array $issue;
 
     #[ORM\Column]

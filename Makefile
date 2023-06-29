@@ -21,6 +21,9 @@ migration:
 new-migration:
 	docker-compose run app php bin/console doctrine:migrations:diff
 
+cron:
+	docker-compose run app php bin/console cli:planka
+
 ps:
 	docker-compose ps
 
