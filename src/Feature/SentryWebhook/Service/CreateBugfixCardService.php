@@ -17,7 +17,6 @@ final class CreateBugfixCardService
 
     public function __construct(
         private readonly bool $isEnable,
-        private readonly string $numerateLabelId,
         private readonly string $bugfixLabelId,
         private readonly SentryIssueRepository $repository,
         private readonly EntityManagerInterface $entityManager,
@@ -52,7 +51,6 @@ final class CreateBugfixCardService
 
         $client->card->update($card);
 
-        $client->cardLabel->add($card->id, $this->numerateLabelId);
         $client->cardLabel->add($card->id, $this->bugfixLabelId);
 
         $issue->setIsCreated(true);
