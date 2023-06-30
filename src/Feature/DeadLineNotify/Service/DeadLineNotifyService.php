@@ -137,7 +137,7 @@ final class DeadLineNotifyService
                     continue;
                 }
 
-                if ($now > $cardDeadLine) {
+                if ($now > $cardDeadLine->setTime(23, 59, 59)) {
                     $this->notify($userNotify, $card, NotifyTypeEnum::AFTER_DEADLINE_BY_EVERYDAY);
                 }
             }
