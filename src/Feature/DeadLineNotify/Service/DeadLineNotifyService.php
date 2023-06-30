@@ -97,9 +97,14 @@ final class DeadLineNotifyService
             return;
         }
 
+        $now = new \DateTimeImmutable(timezone: new DateTimeZone($this->timezone));
+
+        if ($now < $now->setTime(8, 0)) {
+            return;
+        }
+
         foreach ($board->included->cards as $card) {
             if ($card->dueDate !== null) {
-                $now = new \DateTimeImmutable(timezone: new DateTimeZone($this->timezone));
                 $cardDeadLine = $card->dueDate->setTimezone(new DateTimeZone($this->timezone));
 
                 if ($now->modify('+1 week') >= $cardDeadLine) {
@@ -132,7 +137,7 @@ final class DeadLineNotifyService
                     continue;
                 }
 
-                if ($now > $cardDeadLine && $now > $now->setTime(8, 0)) {
+                if ($now > $cardDeadLine) {
                     $this->notify($userNotify, $card, NotifyTypeEnum::AFTER_DEADLINE_BY_EVERYDAY);
                 }
             }
