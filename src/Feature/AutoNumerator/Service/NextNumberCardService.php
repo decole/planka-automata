@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Feature\AutoNumerator\Service;
 
 use App\Entity\BoardCardDetails;
-use App\Feature\AutoNumerator\Dto\PrefixNumberContext;
 use App\Repository\BoardCardDetailsRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Planka\Bridge\Views\Dto\Board\BoardDto;
 
 final class NextNumberCardService
 {
@@ -17,32 +17,33 @@ final class NextNumberCardService
     ) {
     }
 
-    public function getNextNumber(PrefixNumberContext $context, int $boardId): int
+    public function getMaxNumberByBoardDto(BoardDto $board, string $cardPrefix): int
     {
-        $cardDetail = $this->repository->findLastNumberByBoardId($boardId);
+        $max = 0;
 
-        $last = $cardDetail?->getLastCardNumber() ?? 0;
+        foreach ($board->included->cards as $card) {
+            $number = PrefixTemplateResolver::retrieveNumber($card->name, $cardPrefix);
 
-        foreach ($context->getNumberedCards() as $card) {
-            $current = PrefixTemplateResolver::retrieveNumber($card->name, $context->getPrefix());
-
-            if ($current > $last) {
-                $last = $current;
+            if ($number > $max) {
+                $max = $number;
             }
         }
 
-        if ($cardDetail === null) {
-            $cardDetail = $this->createEntity($boardId);
-        }
-
-        $cardDetail->setLastCardNumber($last);
-
-        $this->save($cardDetail);
-
-        return ++$last;
+        return $max;
     }
 
-    public function saveByNextNumber(int $nextNumber, int $boardId): void
+    public function getSavedNumber(string $boardId): int
+    {
+        $entity = $this->repository->findLastNumberByBoardId((int)$boardId);
+
+        if ($entity === null) {
+            return 0;
+        }
+
+        return $entity->getLastCardNumber() ?? 0;
+    }
+
+    public function saveMaxNumber(int $number, int $boardId): void
     {
         $cardDetail = $this->repository->findLastNumberByBoardId($boardId);
 
@@ -50,7 +51,7 @@ final class NextNumberCardService
             $cardDetail = $this->createEntity($boardId);
         }
 
-        $cardDetail->setLastCardNumber($nextNumber - 1);
+        $cardDetail->setLastCardNumber($number);
 
         $this->save($cardDetail);
     }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Feature\AutoNumerator\Service;
 
 use App\Feature\ApiIntegration\Service\PlankaApiIntegrator;
-use App\Feature\AutoNumerator\Dto\PrefixNumberContext;
 use Planka\Bridge\PlankaClient;
 use Planka\Bridge\Views\Dto\Board\BoardDto;
 use Planka\Bridge\Views\Dto\Card\CardDto;
@@ -17,12 +16,12 @@ final class AutoNumerateCardService
 
     public function __construct(
         private readonly NextNumberCardService $maxNumberService,
-        private readonly string $numerateLabelId,
-        private readonly string $bugfixLabelId,
-        private readonly string $cardPrefix,
-        private readonly string $boardId,
-        private readonly bool $isEnable,
-        private readonly LoggerInterface $logger
+        private readonly string                $numerateLabelId,
+        private readonly string                $bugfixLabelId,
+        private readonly string                $cardPrefix,
+        private readonly string                $boardId,
+        private readonly bool                  $isEnable,
+        private readonly LoggerInterface       $logger
     ) {
     }
 
@@ -34,109 +33,99 @@ final class AutoNumerateCardService
 
         $client = $integrator->getClient();
 
-        $context = $this->createContext($client->board->get($this->boardId));
+        $board = $client->board->get($this->boardId);
 
-        $nextNumber = $this->maxNumberService->getNextNumber($context, (int)$this->boardId);
+        $this->numerateCards($board, $client);
 
-        $this->numerate($context, $nextNumber, $client);
+        $board = $client->board->get($this->boardId);
 
-        $this->labeling($context, $client);
-
-        $this->loggingDoublePrefixCards($context->getDoubleNumberedCards());
-
-        $this->maxNumberService->saveByNextNumber($nextNumber, (int)$this->boardId);
+        $this->labelingCards($board, $client);
     }
 
-    public function createContext(BoardDto $board): PrefixNumberContext
+    private function numerateCards(BoardDto $board, PlankaClient $client): void
     {
-        $context = new PrefixNumberContext($this->cardPrefix);
+        $maxNumber = $this->getMaxNumber($board);
 
-        // add labeled cards
+        foreach ($this->createCardMap($board) as $item) {
+            if ($item['number'] === 0) {
+                ++$maxNumber;
+
+                $this->numerateCard($item['card'], $maxNumber, $client);
+                $this->maxNumberService->saveMaxNumber($maxNumber, (int)$board->item->id);
+            }
+        }
+    }
+
+    private function labelingCards(BoardDto $board, PlankaClient $client): void
+    {
+        $cardLabels = [];
+
         foreach ($board->included->cardLabels as $cardLabel) {
-            if ($cardLabel->labelId === $this->numerateLabelId ||
-                $cardLabel->labelId === $this->bugfixLabelId
-            ) {
+            $cardLabels[$cardLabel->cardId][$cardLabel->labelId] = true;
+        }
+
+        foreach ($board->included->cards as $card) {
+            $number = PrefixTemplateResolver::retrieveNumber($card->name, $this->cardPrefix);
+
+            if ($number > 0 && !array_key_exists($this->numerateLabelId, $cardLabels[$card->id])) {
+                $client->cardLabel->add($card->id, $this->numerateLabelId);
+
+                $this->logger->debug('add specific numerate label by card', [
+                    'cardId' => $card->id,
+                ]);
+            }
+        }
+    }
+
+    private function getMaxNumber(BoardDto $board): int
+    {
+        $maxNumber = $this->maxNumberService->getMaxNumberByBoardDto($board, $this->cardPrefix);
+        $savedNumber = $this->maxNumberService->getSavedNumber($board->item->id);
+
+        if ($savedNumber > $maxNumber) {
+            $maxNumber = $savedNumber;
+        }
+
+        return $maxNumber;
+    }
+
+    /**
+     * @param BoardDto $board
+     * @return array<string, array{number: int, card: CardDto}>
+     */
+    private function createCardMap(BoardDto $board): array
+    {
+        $cardMap = [];
+
+        foreach ($board->included->cardLabels as $cardLabel) {
+            if ($cardLabel->labelId === $this->numerateLabelId || $cardLabel->labelId === $this->bugfixLabelId) {
                 foreach ($board->included->cards as $card) {
                     if ($card->id === $cardLabel->cardId) {
-                        $context->addCard($card);
+                        $cardMap[$card->id] = [
+                            'number' => PrefixTemplateResolver::retrieveNumber($card->name, $this->cardPrefix),
+                            'card' => $card,
+                        ];
                     }
                 }
             }
         }
 
-        // add cards with numerical template without label
-        $labeledCards = array_flip($context->getAllCards());
-
-        foreach ($board->included->cards as $card) {
-            if (array_key_exists($card->id, $labeledCards)) {
-                continue;
-            }
-
-            $context->addUnlabeledCard($card);
-        }
-
-        return $context;
+        return $cardMap;
     }
 
-    private function numerate(PrefixNumberContext $context, int &$nextNumber, PlankaClient $client): void
+    private function numerateCard(CardDto $card, int $number, PlankaClient $client): void
     {
-        foreach ($context->getUnNumberedCards() as $card) {
-            $prefix = PrefixTemplateResolver::getPrefixWithNumber($context->getPrefix(), $nextNumber);
+        $prefix = PrefixTemplateResolver::getPrefixWithNumber($this->cardPrefix, $number);
 
-            $oldName = $card->name;
-            $card->name = sprintf(self::TEMPLATE_CARD_NAME, $prefix, $card->name);
+        $oldName = $card->name;
+        $card->name = sprintf(self::TEMPLATE_CARD_NAME, $prefix, $card->name);
 
-            // find labeled cards without numerical template
-            $client->card->update($card);
+        $client->card->update($card);
 
-            $this->logger->debug('updated card', [
-                'cardId' => $card->id,
-                'oldName' => $oldName,
-                'newName' => $card->name,
-            ]);
-
-            $nextNumber++;
-        }
-    }
-
-    private function labeling(PrefixNumberContext $context, PlankaClient $client): void
-    {
-        foreach($context->getUnlabeledCards() as $card) {
-            $client->cardLabel->add($card->id, $this->numerateLabelId);
-
-            $this->logger->debug('add specific numerate label by card', [
-                'cardId' => $card->id,
-            ]);
-        }
-    }
-
-    private function loggingDoublePrefixCards(array $cardList): void
-    {
-        foreach ($cardList as $number => $cards) {
-            $this->logger->warning('Planka have doubled number prefix cards', [
-                'number' => $number,
-                'cards' => $this->getCardList($cards),
-            ]);
-        }
-    }
-
-    /**
-     * @param array<int, CardDto> $cards
-     * @return list<array{cardId: int, name: string}>
-     */
-    private function getCardList(array $cards): array
-    {
-        $result = [];
-
-        foreach ($cards as $card) {
-            $template = [
-                'cardId' => (int)$card->id,
-                'name' => $card->name,
-            ];
-
-            $result[] = $template;
-        }
-
-        return $result;
+        $this->logger->debug('updated card', [
+            'cardId' => $card->id,
+            'oldName' => $oldName,
+            'newName' => $card->name,
+        ]);
     }
 }
