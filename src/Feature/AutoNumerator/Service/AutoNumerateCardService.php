@@ -16,12 +16,12 @@ final class AutoNumerateCardService
 
     public function __construct(
         private readonly NextNumberCardService $maxNumberService,
-        private readonly string                $numerateLabelId,
-        private readonly string                $bugfixLabelId,
-        private readonly string                $cardPrefix,
-        private readonly string                $boardId,
-        private readonly bool                  $isEnable,
-        private readonly LoggerInterface       $logger
+        private readonly string $numerateLabelId,
+        private readonly string $bugfixLabelId,
+        private readonly string $cardPrefix,
+        private readonly string $boardId,
+        private readonly bool $isEnable,
+        private readonly LoggerInterface $logger
     ) {
     }
 

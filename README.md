@@ -1,38 +1,91 @@
-# Planka automation
+# Planka automation 
 
-- [x] For Planka cards with a certain label "Project Card", number automatically with a prefix `[<prefix>-<number>]`.
-- [x] Transferring cards from column Archive to another board with the Archive/Trash column.
-- [x] WebHook for Sentry, create a card in the project with the label "Bugfix".
-- [x] Notify in telegram about a suitable deadline by card.
 
-## Todo fix docs
+### MVP (minimal version product)
 
-> find id, create services commands for list project, board and board list
 
-> and add info by enable features
+## Features:
 
-----
+- Automatically number with a prefix prefix `[<prefix>-<number>] cards by specific label
+- Transferring cards from column Archive to another board with the Archive/Trash column
+- WebHook for Sentry, create a card in the project with the label "Bugfix"
+- Notify in telegram about a suitable deadline by card.
 
-Used by RoadRunner
 
-https://github.com/Baldinof/roadrunner-bundle
+### What to do first:
 
-----
+Copy .env in .env.local
 
-* Download RoadRunner locally: `vendor/bin/rr get --location bin/`
-* Run your application: `bin/rr serve -c .rr.dev.yaml --debug`
-* For production, use: `bin/rr serve`
-* Visit http://localhost:85 <- see [docker-compose.yaml.dist](docker-compose.yaml.dist)
+To activate the feature, you need to set the feature to true in .env.local
 
-----
+Example:
 
-## Number automatically with a prefix
+```
+IS_ENABLE_FEATURE_AUTO_NUMERATOR=true
+IS_ENABLE_FEATURE_DRAG_FINISH_CARD_TO_ARCHIVE_BOARD=true
+IS_ENABLE_FEATURE_SENTRY_ISSUE_CARD=true
+IS_ENABLE_FEATURE_NOTIFY_DEADLINE_CARD_CARD=true
+```
+
+
+### You should also configure the remaining parameters.
+
+What do the parameters mean in .env:
+
+- `SENTRY_DSN` - Sentry URL, for debug and error tracking
+
+
+- `TELEGRAM_BOT_TOKEN` - telegram token bot, example: `5123123123:AAAAAAAAAAAAAAAAAAA`
+- `TELEGRAM_BOT_NAME` - telegram bot name
+
+
+- `PLANKA_URI` - URI your planka instance
+- `PLANKA_PORT`- port, the one you are using, for example 3000, 80, 443 for https
+- `PLANKA_USER` - user email, it is recommended to create a separate user for automation
+- `PLANKA_PASSWORD` - password
+
+
+- `IS_ENABLE_FEATURE_AUTO_NUMERATOR` - auto numbering feature 
+- `IS_ENABLE_FEATURE_DRAG_FINISH_CARD_TO_ARCHIVE_BOARD`- transferring a card from the ready/archive column to another board in the column of archive cards
+- `IS_ENABLE_FEATURE_SENTRY_ISSUE_CARD` - feature of sending sentry errors from the integration into the plank board
+- `IS_ENABLE_FEATURE_NOTIFY_DEADLINE_CARD_CARD` - notification feature about upcoming deadlines
+
+
+- `PLANKA_BOARD_ID` - id of the board we need
+- `PLANKA_BUGFIX_LABEL_ID` - label for a card marked bugfix. Needed for the integration feature with sentry
+- `PLANKA_NUMERICAL_LABEL_ID` - task label, needed for a feature with auto-numbering tasks
+- `PLANKA_NUMERICAL_TEMPLATE` - task prefix by name. Template is example - [MIMO-<number>]
+
+
+For the feature of transferring finished cards to the archive
+
+- `PLANKA_ARCHIVE_DAYS_BEFORE_TRANSFER` - after how many days you can transfer the card to the archive board 
+- `PLANKA_ARCHIVE_BOARD_ID` - archive board id
+- `PLANKA_ARCHIVE_TARGET_LIST_ID` - work board column id
+- `PLANKA_ARCHIVE_LIST_ID` - archive board column id
+- `PLANKA_ACTIVE_TARGET_LIST_ID` - id of the work board column where bugfix cards will be created
+- `DUE_TELEGRAM_MESSAGE` - telegram message notification of upcoming deadlines
+
+
+### Number automatically with a prefix
 
 In `.env` file copy to `.env.local` and change variable:
 
 - `PLANKA_BOARD_ID`
 - `PLANKA_BUGFIX_LABEL_ID`
 - `PLANKA_NUMERICAL_LABEL_ID`
+
+To find `PLANKA_BOARD_ID` you need to run the cli command `bin/console cli:boards`
+
+If you already have a board, then you have an example:
+
+``` bash
+Id: 826628752233465784 | Name: One
+Id: 745435921242915851 | Name: Two
+Id: 778450680049304881 | Name: Archive
+```
+
+For `PLANKA_BOARD_ID` insert the id of the board we need.
 
 This ids you find, by seen in your Planka service. Watch Crome Browser Ctrl+Shift+I. 
 And in tab "Network" see `?__sails_io_sdk_version=....`, click this line, and tab "Messages" see payloads. 
@@ -70,7 +123,9 @@ And save the last occupied card number for the prefix to the database.
 After that, you can put the numbered cards into other boards or delete them.
 The script will know which last card number to rely on.
 
+
 ## Transferring cards from column Archive to another board with the Archive/Trash column.
+
 
 ### What is it for?
 
@@ -81,3 +136,14 @@ Script, a week after placing the card in the column, transfers the archive to an
 there is a special column for cards from the archive of the current board.
 
 ----
+
+Used by RoadRunner
+
+https://github.com/Baldinof/roadrunner-bundle
+
+----
+
+* Download RoadRunner locally: `vendor/bin/rr get --location bin/`
+* Run your application: `bin/rr serve -c .rr.dev.yaml --debug`
+* For production, use: `bin/rr serve`
+* Visit http://localhost:85 <- see [docker-compose.yaml.dist](docker-compose.yaml.dist)
