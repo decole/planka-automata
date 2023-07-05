@@ -6,7 +6,7 @@
 
 ## Features:
 
-- Automatically number with a prefix prefix `[<prefix>-<number>] cards by specific label
+- Automatically number with a prefix prefix `[<prefix>-<number>]` cards by specific label
 - Transferring cards from column Archive to another board with the Archive/Trash column
 - WebHook for Sentry, create a card in the project with the label "Bugfix"
 - Notify in telegram about a suitable deadline by card.
