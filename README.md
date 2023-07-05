@@ -48,7 +48,7 @@ What do the parameters mean in .env:
 - `IS_ENABLE_FEATURE_AUTO_NUMERATOR` - auto numbering feature 
 - `IS_ENABLE_FEATURE_DRAG_FINISH_CARD_TO_ARCHIVE_BOARD`- transferring a card from the ready/archive column to another board in the column of archive cards
 - `IS_ENABLE_FEATURE_SENTRY_ISSUE_CARD` - feature of sending sentry errors from the integration into the plank board
-- `IS_ENABLE_FEATURE_NOTIFY_DEADLINE_CARD_CARD` - notification feature about upcoming deadlines
+- `IS_ENABLE_FEATURE_NOTIFY_DEADLINE_CARD` - notification feature about upcoming deadlines
 
 
 - `PLANKA_BOARD_ID` - id of the board we need
