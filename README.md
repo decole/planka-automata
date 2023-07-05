@@ -111,9 +111,19 @@ For Bugfix cards, create lebel **'bugfix'**
 Set the card to a new label **'bugfix'** and you will see its identifier.
 Accordingly, `PLANKA_BUGFIX_LABEL_ID` will be equal to the found identifier.
 
+---
+
 > ! First of all run the migrations `bin/console d:m:m --no-interaction`
 
 Next, you need to configure the launch of the cron command `bin/console cli:planka`
+
+Example:
+```bash
+crontab -e
+
+* * * * *   docker-compose -f /home/user/automation-planka/docker-compose.yaml run -T app php bin/console cli:planka > /dev/null 2>&1
+```
+When `/home/user/automation-planka/docker-compose.yaml` is absolutly path to target docker-compose.yaml
 
 The first time the script will go through, find your cards, find out the last card number by your prefix.
 
